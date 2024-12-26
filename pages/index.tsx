@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import axios from 'axios';
 import {
   Button,
@@ -23,32 +24,32 @@ const handlePaymentMethodSelect = async (paymentMethod: string) => {
   const sessionId = localStorage.getItem('sessionId'); // Retrieve session ID from local storage
 
   if (!sessionId) {
-      console.error('Session ID not found');
-      return;
+    console.error('Session ID not found');
+    return;
   }
 
   try {
-      const response = await fetch('api/payments/pay', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${sessionId}`, // Use session ID as the token
-          },
-          body: JSON.stringify({ paymentMethod }),
-      });
+    const response = await fetch('api/payments/pay', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionId}`, // Use session ID as the token
+      },
+      body: JSON.stringify({ paymentMethod }),
+    });
 
-      if (response.ok) {
-          const data = await response.json();
-          console.log('Payment successful:', data.message);
-          // Handle successful payment and participation
-      } else {
-          const errorData = await response.json();
-          console.error('Payment failed:', errorData.message);
-          // Handle payment failure
-      }
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Payment successful:', data.message);
+      // Handle successful payment and participation
+    } else {
+      const errorData = await response.json();
+      console.error('Payment failed:', errorData.message);
+      // Handle payment failure
+    }
   } catch (error) {
-      console.error('Error:', error);
-      // Handle network or other errors
+    console.error('Error:', error);
+    // Handle network or other errors
   }
 };
 
@@ -80,6 +81,7 @@ const HomePage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false); // Auth modal state
+  const [verificationModalOpen, setVerificationModalOpen] = useState(false);
 
   useEffect(() => {
     axios.get('/api/users/auth/status')
@@ -97,17 +99,29 @@ const HomePage = () => {
     return null;
   }
 
-  const handleOpenPaymentModal = () => {
+  const handleOpenPaymentModal = async () => {
     if (isLoggedIn) {
-      setOpen(true);
+      try {
+        const response = await axios.get('/api/verification/status');
+        const isVerified = response.data.verified;
+
+        if (isVerified) {
+          setOpen(true); // Open payment modal
+        } else {
+          setVerificationModalOpen(true); // Open verification modal
+        }
+      } catch (error) {
+        console.error('Error checking verification status:', error);
+      }
     } else {
-      setAuthModalOpen(true);
+      setAuthModalOpen(true); // Open login/register modal
     }
   };
 
   const handleCloseModals = () => {
     setOpen(false);
     setAuthModalOpen(false);
+    setVerificationModalOpen(false);
   };
 
   const handleDrawerToggle = () => setDrawerOpen(!drawerOpen);
@@ -117,15 +131,15 @@ const HomePage = () => {
       .then(() => {
         setIsLoggedIn(false);
         setDrawerOpen(false);
-        alert('You have successfully logged out.');
       })
       .catch((error) => {
         console.error('Error logging out:', error);
       });
   };
 
+  const router = useRouter();
   const paymentOptions = ['Credit Card', 'PayPal', 'Google Pay', 'Apple Pay'];
-  const settingsMenu = ['Personal Data', 'Payment Data', 'OASIS', 'Losses'];
+  const settingsMenu = ['Verification', 'Ban'];
 
   return (
     <ThemeProvider theme={theme}>
@@ -281,6 +295,56 @@ const HomePage = () => {
           </Box>
         </Modal>
 
+        {/* Verification Modal */}
+        <Modal
+          open={verificationModalOpen}
+          onClose={handleCloseModals}
+          aria-labelledby="verification-modal-title"
+          aria-describedby="verification-modal-description"
+        >
+          <Box
+            sx={{
+              position: 'relative',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 300,
+              bgcolor: 'background.paper',
+              border: '2px solid #000',
+              borderRadius: 2,
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <IconButton
+              aria-label="close"
+              onClick={handleCloseModals}
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography id="verification-modal-title" variant="h6" component="h2">
+              You are not verified yet
+            </Typography>
+            <Typography id="verification-modal-description" sx={{ mt: 2 }}>
+              Please verify your account to proceed with the payment.
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+              <Button
+                variant="contained"
+                onClick={() => window.location.href = '/verify'}
+                sx={{ backgroundColor: '#1976d2' }}
+              >
+                Verify Here
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+
         {/* Payment Modal */}
         <Modal
           open={open}
@@ -349,7 +413,17 @@ const HomePage = () => {
           </Box>
           <List>
             {settingsMenu.map((item) => (
-              <ListItem key={item} component="button" onClick={() => alert(`Selected: ${item}`)}>
+              <ListItem
+                key={item}
+                component="button"
+                onClick={() => {
+                  if (item === 'Verification') {
+                    router.push('/verify'); // Navigate to the verify page
+                  } else {
+                    alert(`Selected: ${item}`);
+                  }
+                }}
+              >
                 <ListItemText primary={item} />
               </ListItem>
             ))}

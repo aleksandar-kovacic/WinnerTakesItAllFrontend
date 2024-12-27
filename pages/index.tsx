@@ -62,12 +62,18 @@ const HomePage = () => {
   const [banModalOpen, setBanModalOpen] = useState(false);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [prizeAndOdds, setPrizeAndOddsAndDate] = useState({ prize: 0, odds: '', date: 0 });
+  const [isParticipating, setIsParticipating] = useState(false);
 
   useEffect(() => {
     const fetchAuthStatus = async () => {
       try {
         const response = await axios.get('/api/users/auth/status');
         setIsLoggedIn(response.data.loggedIn);
+
+        if (response.data.loggedIn) {
+          const participationResponse = await axios.get('/api/payments/status');
+          setIsParticipating(participationResponse.data.paid);
+        }
       } catch (error) {
         console.error('Error fetching auth status:', error);
       } finally {
@@ -201,6 +207,11 @@ const HomePage = () => {
           flexDirection: 'column',
         }}
       >
+        {isLoggedIn && isParticipating && (
+          <Typography variant="h6" sx={{ color: 'green', marginBottom: '16px', textAlign: 'center' }}>
+            You are participating. Good Luck! The winner will be announced per email.
+          </Typography>
+        )}
         {isLoggedIn ? (
           <IconButton
             onClick={handleDrawerToggle}

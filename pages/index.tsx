@@ -20,37 +20,14 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-const handlePaymentMethodSelect = async (paymentMethod: string) => {
-  const sessionId = localStorage.getItem('sessionId'); // Retrieve session ID from local storage
-
-  if (!sessionId) {
-    console.error('Session ID not found');
-    return;
-  }
-
-  try {
-    const response = await fetch('api/payments/pay', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionId}`, // Use session ID as the token
-      },
-      body: JSON.stringify({ paymentMethod }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log('Payment successful:', data.message);
-      // Handle successful payment and participation
-    } else {
-      const errorData = await response.json();
-      console.error('Payment failed:', errorData.message);
-      // Handle payment failure
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    // Handle network or other errors
-  }
+const formatDate = (dateString: number) => {
+  return new Date(dateString).toLocaleString('de-DE', {
+    hour: '2-digit',
+    minute: '2-digit',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).replace(',', '');
 };
 
 const theme = createTheme({
@@ -83,17 +60,32 @@ const HomePage = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false); // Auth modal state
   const [verificationModalOpen, setVerificationModalOpen] = useState(false);
   const [banModalOpen, setBanModalOpen] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [prizeAndOdds, setPrizeAndOddsAndDate] = useState({ prize: 0, odds: '', date: 0 });
 
   useEffect(() => {
-    axios.get('/api/users/auth/status')
-      .then((response) => {
+    const fetchAuthStatus = async () => {
+      try {
+        const response = await axios.get('/api/users/auth/status');
         setIsLoggedIn(response.data.loggedIn);
-        setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error fetching auth status:', error);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    const fetchPrizeAndOdds = async () => {
+      try {
+        const response = await axios.get('/api/games/information');
+        setPrizeAndOddsAndDate({ prize: response.data.prizePool * 0.8, odds: response.data.prizePool, date: response.data.endDate });
+      } catch (error) {
+        console.error('Error fetching prize and odds:', error);
+      }
+    };
+
+    fetchAuthStatus();
+    fetchPrizeAndOdds();
   }, []);
 
   if (loading) {
@@ -119,6 +111,14 @@ const HomePage = () => {
           return;
         }
 
+        const paymentResponse = await axios.get('/api/payments/status');
+        const isPaid = paymentResponse.data.paid;
+
+        if (isPaid) {
+          setPaymentModalOpen(true);
+          return;
+        }
+
         setOpen(true); // Open payment modal if verified and not banned
       } catch (error) {
         console.error('Error checking verification or ban status:', error);
@@ -128,11 +128,47 @@ const HomePage = () => {
     }
   };
 
+  const handlePaymentMethodSelect = async (paymentMethod: string) => {
+    const sessionId = localStorage.getItem('sessionId'); // Retrieve session ID from local storage
+  
+    if (!sessionId) {
+      console.error('Session ID not found');
+      return;
+    }
+  
+    try {
+      const response = await fetch('api/payments/pay', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionId}`, // Use session ID as the token
+        },
+        body: JSON.stringify({ paymentMethod }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Payment successful:', data.message);
+        // Handle successful payment and participation
+      } else {
+        const errorData = await response.json();
+        console.error('Payment failed:', errorData.message);
+        // Handle payment failure
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle network or other errors
+    }
+    setPaymentModalOpen(false);
+    window.location.reload();
+  };
+
   const handleCloseModals = () => {
     setOpen(false);
     setAuthModalOpen(false);
     setVerificationModalOpen(false);
     setBanModalOpen(false);
+    setPaymentModalOpen(false);
   };
 
   const handleDrawerToggle = () => setDrawerOpen(!drawerOpen);
@@ -215,8 +251,9 @@ const HomePage = () => {
             textAlign: 'center',
           }}
         >
-          JACKPOT - 1.980.000€<br />
-          Winner Takes It All
+          Winner Takes It All<br />
+          JACKPOT - {Number(prizeAndOdds.prize).toFixed(2)}€<br />
+          Ends on {formatDate(prizeAndOdds.date)}
         </Typography>
         <Button
           variant="contained"
@@ -247,7 +284,8 @@ const HomePage = () => {
             textAlign: 'center',
           }}
         >
-          Odds - 1 in 2.000.000
+          Odds - 1 in {prizeAndOdds.odds}<br />
+          Fee - 20%
         </Typography>
 
         {/* Authentication Modal */}
@@ -338,14 +376,14 @@ const HomePage = () => {
             >
               <CloseIcon />
             </IconButton>
-            <Typography id="verification-modal-title" variant="h6" component="h2">
+            <Typography id="verification-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center' }}>
               You are not verified yet
             </Typography>
-            <Typography id="verification-modal-description" sx={{ mt: 2 }}>
-              Please verify your account to proceed with the payment.
+            <Typography id="verification-modal-description" sx={{ mt: 2 , textAlign: 'center' }}>
+              Please verify your account to proceed with the payment:
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-            <Button
+              <Button
                 variant="contained"
                 onClick={() => window.location.href = '/verify'}
                 sx={{ backgroundColor: 'black', color: 'white' }}
@@ -388,10 +426,10 @@ const HomePage = () => {
             >
               <CloseIcon />
             </IconButton>
-            <Typography id="ban-modal-title" variant="h6" component="h2">
+            <Typography id="ban-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center' }}>
               You are banned
             </Typography>
-            <Typography id="ban-modal-description" sx={{ mt: 2 }}>
+            <Typography id="ban-modal-description" sx={{ mt: 2, textAlign: 'center' }}>
               You can unban yourself by following:
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
@@ -401,6 +439,53 @@ const HomePage = () => {
                 sx={{ backgroundColor: 'black', color: 'white' }}
               >
                 Unban Here
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+
+        {/* isPaid Modal */}
+        <Modal
+          open={paymentModalOpen}
+          onClose={handleCloseModals}
+          aria-labelledby="ispaid-modal-title"
+          aria-describedby="ispaid-modal-description"
+        >
+          <Box
+            sx={{
+              position: 'relative',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 300,
+              bgcolor: 'background.paper',
+              border: '2px solid #000',
+              borderRadius: 2,
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <IconButton
+              aria-label="close"
+              onClick={handleCloseModals}
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography id="ispaid-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center' }}>
+              You are already participating.
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+              <Button
+                variant="contained"
+                onClick={handleCloseModals}
+                sx={{ backgroundColor: 'black', color: 'white' }}
+              >
+                OK
               </Button>
             </Box>
           </Box>
@@ -435,7 +520,7 @@ const HomePage = () => {
                 <Button
                   key={option}
                   variant="outlined"
-                  onClick={() => handlePaymentMethodSelect(option)} // Add a handler function
+                  onClick={() => handlePaymentMethodSelect(option)}
                   sx={{
                     textTransform: 'none',
                     fontWeight: 'bold',

@@ -82,6 +82,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false); // Auth modal state
   const [verificationModalOpen, setVerificationModalOpen] = useState(false);
+  const [banModalOpen, setBanModalOpen] = useState(false);
 
   useEffect(() => {
     axios.get('/api/users/auth/status')
@@ -102,16 +103,25 @@ const HomePage = () => {
   const handleOpenPaymentModal = async () => {
     if (isLoggedIn) {
       try {
-        const response = await axios.get('/api/verification/status');
-        const isVerified = response.data.verified;
+        const verificationResponse = await axios.get('/api/verification/status');
+        const isVerified = verificationResponse.data.verified;
 
-        if (isVerified) {
-          setOpen(true); // Open payment modal
-        } else {
+        if (!isVerified) {
           setVerificationModalOpen(true); // Open verification modal
+          return;
         }
+
+        const banResponse = await axios.get('/api/ban/status');
+        const isBanned = banResponse.data.banned;
+
+        if (isBanned) {
+          setBanModalOpen(true); // Open ban modal
+          return;
+        }
+
+        setOpen(true); // Open payment modal if verified and not banned
       } catch (error) {
-        console.error('Error checking verification status:', error);
+        console.error('Error checking verification or ban status:', error);
       }
     } else {
       setAuthModalOpen(true); // Open login/register modal
@@ -122,6 +132,7 @@ const HomePage = () => {
     setOpen(false);
     setAuthModalOpen(false);
     setVerificationModalOpen(false);
+    setBanModalOpen(false);
   };
 
   const handleDrawerToggle = () => setDrawerOpen(!drawerOpen);
@@ -334,12 +345,62 @@ const HomePage = () => {
               Please verify your account to proceed with the payment.
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-              <Button
+            <Button
                 variant="contained"
                 onClick={() => window.location.href = '/verify'}
-                sx={{ backgroundColor: '#1976d2' }}
+                sx={{ backgroundColor: 'black', color: 'white' }}
               >
                 Verify Here
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+
+        {/* Ban Modal */}
+        <Modal
+          open={banModalOpen}
+          onClose={handleCloseModals}
+          aria-labelledby="ban-modal-title"
+          aria-describedby="ban-modal-description"
+        >
+          <Box
+            sx={{
+              position: 'relative',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 300,
+              bgcolor: 'background.paper',
+              border: '2px solid #000',
+              borderRadius: 2,
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <IconButton
+              aria-label="close"
+              onClick={handleCloseModals}
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography id="ban-modal-title" variant="h6" component="h2">
+              You are banned
+            </Typography>
+            <Typography id="ban-modal-description" sx={{ mt: 2 }}>
+              You can unban yourself by following:
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+              <Button
+                variant="contained"
+                onClick={() => window.location.href = '/ban'}
+                sx={{ backgroundColor: 'black', color: 'white' }}
+              >
+                Unban Here
               </Button>
             </Box>
           </Box>
@@ -418,7 +479,9 @@ const HomePage = () => {
                 component="button"
                 onClick={() => {
                   if (item === 'Verification') {
-                    router.push('/verify'); // Navigate to the verify page
+                    router.push('/verify');
+                  } else if (item === 'Ban') {
+                    router.push('/ban');
                   } else {
                     alert(`Selected: ${item}`);
                   }

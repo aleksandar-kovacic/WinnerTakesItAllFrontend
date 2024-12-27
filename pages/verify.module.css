@@ -1,70 +1,107 @@
 .container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    text-align: center;
-  }
-  
-  .title {
-    font-size: 2em;
-    margin-bottom: 20px;
-  }
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  /* Full viewport height */
+}
 
-  .subtitle {
-    font-size: 1.2rem;
-    color: #666;
-    margin-top: 5px;
-  }
-  
-  .error {
-    color: red;
-  }
-  
-  .success {
-    color: green;
-  }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .dropzone {
-    border: 2px dashed #cccccc;
-    border-radius: 5px;
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    width: 100%;
-    height: 200px; /* Increase the height */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-  }
-  
-  .dropzone p {
-    margin: 0;
-  }
-  
-  .dropzone .icon {
-    font-size: 50px; /* Size of the drag and drop symbol */
-    color: #cccccc;
-    margin-bottom: 10px;
-  }
-  
-  .submitButton {
-    background-color: blue;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  .submitButton:disabled {
-    background-color: grey;
-    cursor: not-allowed;
-  }
+.title {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+.error {
+  color: red;
+}
+
+.success {
+  color: green;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dropzone {
+  border: 2px dashed #cccccc;
+  border-radius: 5px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  height: 200px;
+  /* Increase the height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-width: 500px; /* Add minimum width */
+}
+
+.dropzone p {
+  margin: 0;
+}
+
+.dropzone .icon {
+  font-size: 50px;
+  /* Size of the drag and drop symbol */
+  color: #cccccc;
+  margin-bottom: 10px;
+}
+
+.submitButton {
+  background-color: #28a745; /* Modern green color */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px; /* More rounded corners */
+  cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Add shadow */
+  transition: all 0.3s ease; /* Smooth transition */
+  min-width: 150px; /* Add minimum width */
+}
+
+.submitButton:hover {
+  background-color: #218838; /* Darker green on hover */
+  transform: translateY(-2px); /* Slight lift on hover */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
+}
+
+.submitButton:disabled {
+  background-color: grey;
+  cursor: not-allowed;
+}
+
+.redText {
+  color: red;
+}
+
+.homeButton {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  border: none;
+  border-radius: 25px;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.homeButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}

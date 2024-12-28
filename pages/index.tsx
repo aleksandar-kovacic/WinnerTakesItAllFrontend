@@ -192,7 +192,12 @@ const HomePage = () => {
   };
 
   const router = useRouter();
-  const paymentOptions = ['Credit Card', 'PayPal', 'Google Pay', 'Apple Pay'];
+  const paymentOptions = [
+    { name: 'Credit Card', logo: '/credit-card.png' },
+    { name: 'PayPal', logo: '/paypal.png' },
+    { name: 'Google Pay', logo: '/google-pay.png' },
+    { name: 'Apple Pay', logo: '/apple-pay.png' },
+  ];
   const settingsMenu = ['Verification', 'Ban'];
 
   return (
@@ -313,28 +318,28 @@ const HomePage = () => {
         </Grid>
         {isLoggedIn && isParticipating && (
           <Typography
-          variant="h6"
-          sx={{
-            color: 'white',
-            marginTop: '50px',
-            textAlign: 'center',
-            background: 'linear-gradient(45deg, #FFD700, #FF8C00)',
-            WebkitBackgroundClip: 'text',
-            fontWeight: 'bold',
-            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
-            animation: 'glow 1.5s infinite alternate',
-            '@keyframes glow': {
-              from: {
-                textShadow: '0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FF8C00, 0 0 40px #FF8C00, 0 0 50px #FF8C00, 0 0 60px #FF8C00, 0 0 70px #FF8C00',
+            variant="h6"
+            sx={{
+              color: 'white',
+              marginTop: '50px',
+              textAlign: 'center',
+              background: 'linear-gradient(45deg, #FFD700, #FF8C00)',
+              WebkitBackgroundClip: 'text',
+              fontWeight: 'bold',
+              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+              animation: 'glow 1.5s infinite alternate',
+              '@keyframes glow': {
+                from: {
+                  textShadow: '0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FF8C00, 0 0 40px #FF8C00, 0 0 50px #FF8C00, 0 0 60px #FF8C00, 0 0 70px #FF8C00',
+                },
+                to: {
+                  textShadow: '0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FF8C00, 0 0 50px #FF8C00, 0 0 60px #FF8C00, 0 0 70px #FF8C00, 0 0 80px #FF8C00',
+                },
               },
-              to: {
-                textShadow: '0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FF8C00, 0 0 50px #FF8C00, 0 0 60px #FF8C00, 0 0 70px #FF8C00, 0 0 80px #FF8C00',
-              },
-            },
-          }}
-        >
-          You’re in the game! The winner will be announced by email.
-        </Typography>
+            }}
+          >
+            You’re in the game! The winner will be announced by email.
+          </Typography>
         )}
 
         {/* Authentication Modal */}
@@ -567,19 +572,22 @@ const HomePage = () => {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               {paymentOptions.map((option) => (
                 <Button
-                  key={option}
+                  key={option.name}
                   variant="outlined"
-                  onClick={() => handlePaymentMethodSelect(option)}
+                  onClick={() => handlePaymentMethodSelect(option.name)}
                   sx={{
                     textTransform: 'none',
                     fontWeight: 'bold',
                     color: 'black',
+                    display: 'flex',
+                    alignItems: 'center',
                     '&:hover': {
                       backgroundColor: '#f5f5f5',
                     },
                   }}
                 >
-                  {option}
+                  <img src={option.logo} alt={option.name} style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+                  {option.name}
                 </Button>
               ))}
             </Box>

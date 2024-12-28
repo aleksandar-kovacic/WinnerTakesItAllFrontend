@@ -105,8 +105,8 @@ const Verify = () => {
     return (
         <div className={styles.container}>
             <h1 className={styles.title}>Verify Your Identity</h1>
-            <p className={`${styles.subtitle} ${styles.redText}`}>
-                Note: This is a proof of concept. A third-party verification service will be used in the future. Currently, you can upload any images and it will verify your account successfully for demonstration purposes.
+            <p className={`${styles.subtitle} ${styles.whiteText}`} style={{ maxWidth: '700px', margin: '0 auto', textAlign: 'center', fontSize: '16px' }}>
+                Note: This is a proof of concept. A third-party verification service will be used in the future. Currently, you can upload any images and it will verify your account successfully.
             </p>
             {error && <p className={styles.error}>{error}</p>}
             {success && <p className={styles.success}>Verification successful!</p>}

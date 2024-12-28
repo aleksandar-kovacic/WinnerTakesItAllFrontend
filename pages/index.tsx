@@ -12,6 +12,7 @@ import {
   ListItemText,
   IconButton,
   Drawer,
+  Grid
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -38,7 +39,7 @@ const theme = createTheme({
           margin: 0,
           padding: 0,
           height: '100vh',
-          background: 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(34,34,34,1) 50%, rgba(54,54,54,1) 100%)',
+          background: 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(100,100,100,1) 100%)',
           backgroundSize: 'cover',
           backgroundAttachment: 'fixed',
           backgroundPosition: '0 0, 25px 25px',
@@ -136,12 +137,12 @@ const HomePage = () => {
 
   const handlePaymentMethodSelect = async (paymentMethod: string) => {
     const sessionId = localStorage.getItem('sessionId'); // Retrieve session ID from local storage
-  
+
     if (!sessionId) {
       console.error('Session ID not found');
       return;
     }
-  
+
     try {
       const response = await fetch('api/payments/pay', {
         method: 'POST',
@@ -151,7 +152,7 @@ const HomePage = () => {
         },
         body: JSON.stringify({ paymentMethod }),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         console.log('Payment successful:', data.message);
@@ -207,11 +208,6 @@ const HomePage = () => {
           flexDirection: 'column',
         }}
       >
-        {isLoggedIn && isParticipating && (
-          <Typography variant="h6" sx={{ color: 'green', marginBottom: '16px', textAlign: 'center' }}>
-            You are participating. Good Luck! The winner will be announced per email.
-          </Typography>
-        )}
         {isLoggedIn ? (
           <IconButton
             onClick={handleDrawerToggle}
@@ -257,20 +253,34 @@ const HomePage = () => {
         <Typography
           variant="h5"
           sx={{
-            color: 'gray',
+            color: 'white',
             marginBottom: '16px',
             textAlign: 'center',
+            background: 'linear-gradient(45deg, #FFD700, #FF8C00)',
+            WebkitBackgroundClip: 'text',
+            fontWeight: 'bold',
+            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+            animation: 'glow 1.5s infinite alternate',
+            '@keyframes glow': {
+              from: {
+                textShadow: '0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FF8C00, 0 0 40px #FF8C00, 0 0 50px #FF8C00, 0 0 60px #FF8C00, 0 0 70px #FF8C00',
+              },
+              to: {
+                textShadow: '0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FF8C00, 0 0 50px #FF8C00, 0 0 60px #FF8C00, 0 0 70px #FF8C00, 0 0 80px #FF8C00',
+              },
+            },
           }}
         >
           Winner Takes It All<br />
-          JACKPOT - {Number(prizeAndOdds.prize).toFixed(2)}€<br />
-          Ends on {formatDate(prizeAndOdds.date)}
+          <span style={{ fontSize: '1.5em', fontWeight: 'bolder', display: 'block', marginTop: '8px' }}>
+            JACKPOT - {Number(prizeAndOdds.prize).toFixed(2)}€
+          </span><br />
         </Typography>
         <Button
           variant="contained"
           sx={{
-            background: 'linear-gradient(45deg, #D4AF37 30%, #FFD700 90%)',
-            color: 'white',
+            background: 'linear-gradient(45deg, #FFD700 30%, #FFFFE0 90%)',
+            color: '#333333',
             fontSize: '1.5rem',
             padding: '16px 32px',
             minWidth: '150px',
@@ -285,19 +295,47 @@ const HomePage = () => {
           }}
           onClick={handleOpenPaymentModal}
         >
-          1€
+          10€
         </Button>
-        <Typography
+        <Grid container spacing={2} sx={{ marginTop: '16px', textAlign: 'center', color: 'white' }}>
+          <Grid item xs={4} sm={4} md={4} lg={4} xl={4}>
+            <Typography variant="h6">Odds</Typography>
+            <Typography variant="body1">1 in {Math.round(Number(prizeAndOdds.odds) / 10)}</Typography>
+          </Grid>
+          <Grid item xs={4} sm={4} md={4} lg={4} xl={4}>
+            <Typography variant="h6">Fee</Typography>
+            <Typography variant="body1">20%</Typography>
+          </Grid>
+          <Grid item xs={4} sm={4} md={4} lg={4} xl={4}>
+            <Typography variant="h6">Ends on</Typography>
+            <Typography variant="body1">{formatDate(prizeAndOdds.date)}</Typography>
+          </Grid>
+        </Grid>
+        {isLoggedIn && isParticipating && (
+          <Typography
           variant="h6"
           sx={{
-            color: 'gray',
-            marginTop: '16px',
+            color: 'white',
+            marginTop: '50px',
             textAlign: 'center',
+            background: 'linear-gradient(45deg, #FFD700, #FF8C00)',
+            WebkitBackgroundClip: 'text',
+            fontWeight: 'bold',
+            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+            animation: 'glow 1.5s infinite alternate',
+            '@keyframes glow': {
+              from: {
+                textShadow: '0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FF8C00, 0 0 40px #FF8C00, 0 0 50px #FF8C00, 0 0 60px #FF8C00, 0 0 70px #FF8C00',
+              },
+              to: {
+                textShadow: '0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FF8C00, 0 0 50px #FF8C00, 0 0 60px #FF8C00, 0 0 70px #FF8C00, 0 0 80px #FF8C00',
+              },
+            },
           }}
         >
-          Odds - 1 in {prizeAndOdds.odds}<br />
-          Fee - 20%
+          You’re in the game! The winner will be announced by email.
         </Typography>
+        )}
 
         {/* Authentication Modal */}
         <Modal
@@ -390,7 +428,7 @@ const HomePage = () => {
             <Typography id="verification-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center' }}>
               You are not verified yet
             </Typography>
-            <Typography id="verification-modal-description" sx={{ mt: 2 , textAlign: 'center' }}>
+            <Typography id="verification-modal-description" sx={{ mt: 2, textAlign: 'center' }}>
               Please verify your account to proceed with the payment:
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>

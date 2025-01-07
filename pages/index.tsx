@@ -64,6 +64,7 @@ const HomePage = () => {
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [prizeAndOdds, setPrizeAndOddsAndDate] = useState({ prize: 0, odds: '', date: 0 });
   const [isParticipating, setIsParticipating] = useState(false);
+  const [instructionsModalOpen, setInstructionsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchAuthStatus = async () => {
@@ -176,6 +177,7 @@ const HomePage = () => {
     setVerificationModalOpen(false);
     setBanModalOpen(false);
     setPaymentModalOpen(false);
+    setInstructionsModalOpen(false);
   };
 
   const handleDrawerToggle = () => setDrawerOpen(!drawerOpen);
@@ -261,19 +263,7 @@ const HomePage = () => {
             color: 'white',
             marginBottom: '16px',
             textAlign: 'center',
-            background: 'linear-gradient(45deg, #FFD700, #FF8C00)',
-            WebkitBackgroundClip: 'text',
             fontWeight: 'bold',
-            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
-            animation: 'glow 1.5s infinite alternate',
-            '@keyframes glow': {
-              from: {
-                textShadow: '0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FF8C00, 0 0 40px #FF8C00, 0 0 50px #FF8C00, 0 0 60px #FF8C00, 0 0 70px #FF8C00',
-              },
-              to: {
-                textShadow: '0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FF8C00, 0 0 50px #FF8C00, 0 0 60px #FF8C00, 0 0 70px #FF8C00, 0 0 80px #FF8C00',
-              },
-            },
           }}
         >
           Winner Takes It All<br />
@@ -323,24 +313,35 @@ const HomePage = () => {
               color: 'white',
               marginTop: '50px',
               textAlign: 'center',
-              background: 'linear-gradient(45deg, #FFD700, #FF8C00)',
-              WebkitBackgroundClip: 'text',
               fontWeight: 'bold',
-              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
-              animation: 'glow 1.5s infinite alternate',
-              '@keyframes glow': {
-                from: {
-                  textShadow: '0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FF8C00, 0 0 40px #FF8C00, 0 0 50px #FF8C00, 0 0 60px #FF8C00, 0 0 70px #FF8C00',
-                },
-                to: {
-                  textShadow: '0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FF8C00, 0 0 50px #FF8C00, 0 0 60px #FF8C00, 0 0 70px #FF8C00, 0 0 80px #FF8C00',
-                },
-              },
             }}
           >
             You’re in the game! The winner will be announced by email.
           </Typography>
         )}
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: 'lightgrey',
+            color: '#333333',
+            fontSize: '1rem',
+            padding: '8px 16px', // Reduced padding
+            minWidth: '100px', // Reduced minimum width
+            minHeight: '40px', // Reduced minimum height
+            borderRadius: '8px',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            marginTop: '20px',
+            textTransform: 'none',
+            '&:hover': {
+              transform: 'scale(1.05)',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+              backgroundColor: '#d3d3d3',
+            },
+          }}
+          onClick={() => setInstructionsModalOpen(true)}
+        >
+          How it works
+        </Button>
 
         {/* Authentication Modal */}
         <Modal
@@ -395,6 +396,56 @@ const HomePage = () => {
                 Register
               </Button>
             </Box>
+          </Box>
+        </Modal>
+
+        {/* Instructions Modal */}
+        <Modal
+          open={instructionsModalOpen}
+          onClose={handleCloseModals}
+          aria-labelledby="instructions-modal-title"
+          aria-describedby="instructions-modal-description"
+        >
+          <Box
+            sx={{
+              position: 'relative',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 600,
+              bgcolor: 'background.paper',
+              border: '2px solid #000',
+              borderRadius: 2,
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <IconButton
+              aria-label="close"
+              onClick={handleCloseModals}
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography id="instructions-modal-description" sx={{ mt: 0, textAlign: 'left' }}>
+              Hello, my name is Aleksandar Kovacic, and I am a Software Engineer at Deutsche Telekom. This is my first personal project.<br /><br />
+              This application is a simple lottery game where users can participate by paying 10€. Each week, a winner is randomly selected to
+              receive the entire prize pool, minus a 20% fee. You can register, log in, and try your luck at winning the jackpot.<br /><br />
+              Before participating, you need to verify your identity by uploading your ID card and a selfie. (Note: You can upload any picture
+              file for demonstration purposes.) The application also includes a self-ban feature, allowing you to prevent yourself
+              from playing the game. Once verified, you can select your payment method and join the game. Please note that the payment system
+              is for demonstration purposes only, and no real transactions will occur.<br /><br />
+              Good luck!<br /><br />
+              Tech-Stack:<br />
+              Frontend: Next.js<br /> 
+              Backend: Node.js, Express, ArangoDB, Redis (session management)<br />
+              Infrastructure: Hetzner Cloud, Linux, Nginx<br />
+              Security: HTTPS, Rate Limiting<br />
+            </Typography>
           </Box>
         </Modal>
 

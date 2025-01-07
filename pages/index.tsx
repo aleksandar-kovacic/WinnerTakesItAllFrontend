@@ -407,12 +407,15 @@ const HomePage = () => {
           aria-describedby="instructions-modal-description"
         >
           <Box
+            onClick={handleCloseModals}
             sx={{
               position: 'relative',
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              width: 600,
+              width: 350,
+              maxHeight: '80vh', // Limit the height to enable scrolling
+              overflowY: 'auto', // Enable vertical scrolling
               bgcolor: 'background.paper',
               border: '2px solid #000',
               borderRadius: 2,
@@ -432,19 +435,22 @@ const HomePage = () => {
               <CloseIcon />
             </IconButton>
             <Typography id="instructions-modal-description" sx={{ mt: 0, textAlign: 'left' }}>
-              Hello, my name is Aleksandar Kovacic, and I am a Software Engineer at Deutsche Telekom. This is my first personal project.<br /><br />
-              This application is a simple lottery game where users can participate by paying 10€. Each week, a winner is randomly selected to
-              receive the entire prize pool, minus a 20% fee. You can register, log in, and try your luck at winning the jackpot.<br /><br />
+              Hello, my name is Aleksandar Kovacic (<a href="https://www.linkedin.com/in/kovacic1998" target="_blank" rel="noopener noreferrer" style={{ color: 'blue' }}>LinkedIn</a>),
+              and I am a Software Engineer at Deutsche Telekom.<br /><br /> This is my first personal project. This application is a simple lottery
+              game where users can participate by paying 10€. Each week, a winner is randomly selected to receive the entire prize pool, minus a 20% fee.
+              You can register, log in, and try your luck at winning the jackpot.<br /><br />
               Before participating, you need to verify your identity by uploading your ID card and a selfie. (Note: You can upload any picture
               file for demonstration purposes.) The application also includes a self-ban feature, allowing you to prevent yourself
               from playing the game. Once verified, you can select your payment method and join the game. Please note that the payment system
               is for demonstration purposes only, and no real transactions will occur.<br /><br />
               Good luck!<br /><br />
-              Tech-Stack:<br />
-              Frontend: Next.js<br /> 
-              Backend: Node.js, Express, ArangoDB, Redis (session management)<br />
-              Infrastructure: Hetzner Cloud, Linux, Nginx<br />
-              Security: HTTPS, Rate Limiting<br />
+              <strong>Tech-Stack:</strong><br />
+              <ul>
+                <li><strong>Frontend:</strong> Next.js</li>
+                <li><strong>Backend:</strong> Node.js, Express, ArangoDB, Redis (session management)</li>
+                <li><strong>Infrastructure:</strong> Hetzner Cloud, Linux, Nginx</li>
+                <li><strong>Security:</strong> HTTPS, Rate Limiting</li>
+              </ul>
             </Typography>
           </Box>
         </Modal>

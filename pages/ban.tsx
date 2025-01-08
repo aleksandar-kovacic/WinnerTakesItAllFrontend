@@ -52,7 +52,7 @@ const BanStatus = () => {
                     {isBanned ? 'You are currently banned.' : 'You are currently not banned.'}
                 </Typography>
                 <Typography variant="body1" gutterBottom style={{ color: 'white', maxWidth: '700px', margin: '0 auto' }}>
-                    Note: This is a proof of concept. A third-party ban service (e.g. OASIS in Germany) will be used in the future. Currently, you can ban and unban yourself for demonstration purposes.
+                    Note: This is a proof of concept. Currently, you can ban and unban yourself for demonstration purposes.
                 </Typography>
                 <button onClick={handleBanToggle} className={styles.banButton}>
                     {isBanned ? 'Unban Yourself' : 'Ban Yourself'}

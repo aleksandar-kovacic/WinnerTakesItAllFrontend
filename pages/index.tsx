@@ -439,6 +439,8 @@ const HomePage = () => {
               and I am a Software Engineer at Deutsche Telekom.<br /><br /> This is my first personal project. This application is a simple lottery
               game where users can participate by paying 10€. Each week, a winner is randomly selected to receive the entire prize pool, minus a 20% fee.
               You can register, log in, and try your luck at winning the jackpot.<br /><br />
+              Note: This app is for educational and demonstration purposes only; no real prizes, monetary rewards,
+              or payment functionalities are involved.<br /><br />
               Before participating, you need to verify your identity by uploading your ID card and a selfie. (Note: You can upload any picture
               file for demonstration purposes.) The application also includes a self-ban feature, allowing you to prevent yourself
               from playing the game. Once verified, you can select your payment method and join the game. Please note that the payment system
